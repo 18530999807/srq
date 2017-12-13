@@ -15,14 +15,37 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Zhisheng的博客</title>
+  <title>Nginx 基本知识快速入门 | Zhisheng的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Zhisheng的博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="什么是 Nginx？Nginx 是一个高性能的 HTTP 和反向代理服务器，以高稳定性、丰富的功能集、示例配置文件和低系统资源的消耗而闻名。
+Nginx 特点
+处理静态文件，索引文件以及自动索引；打开文件描述符缓冲．
+无缓存的反向代理加速，简单的负载均衡和容错．
+FastCGI，简单的负载均衡和容错．
+模块化的结构。包括 gzipping, byte ranges, chunked respons">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx 基本知识快速入门">
+<meta property="og:url" content="http://yoursite.com/2017/08/05/Nginx/index.html">
 <meta property="og:site_name" content="Zhisheng的博客">
+<meta property="og:description" content="什么是 Nginx？Nginx 是一个高性能的 HTTP 和反向代理服务器，以高稳定性、丰富的功能集、示例配置文件和低系统资源的消耗而闻名。
+Nginx 特点
+处理静态文件，索引文件以及自动索引；打开文件描述符缓冲．
+无缓存的反向代理加速，简单的负载均衡和容错．
+FastCGI，简单的负载均衡和容错．
+模块化的结构。包括 gzipping, byte ranges, chunked respons">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221003659.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221800380.jpg">
+<meta property="og:updated_time" content="2017-08-05T14:44:29.308Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zhisheng的博客">
+<meta name="twitter:title" content="Nginx 基本知识快速入门">
+<meta name="twitter:description" content="什么是 Nginx？Nginx 是一个高性能的 HTTP 和反向代理服务器，以高稳定性、丰富的功能集、示例配置文件和低系统资源的消耗而闻名。
+Nginx 特点
+处理静态文件，索引文件以及自动索引；打开文件描述符缓冲．
+无缓存的反向代理加速，简单的负载均衡和容错．
+FastCGI，简单的负载均衡和容错．
+模块化的结构。包括 gzipping, byte ranges, chunked respons">
+<meta name="twitter:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png">
   
     <link rel="alternative" href="/atom.xml" title="Zhisheng的博客" type="application/atom+xml">
   
@@ -181,22 +204,20 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-CodeMirror" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Nginx" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/09/CodeMirror/">使用 CodeMirror 打造属于自己的在线代码编辑器</a>
+    <h1 class="article-title" itemprop="name">
+      Nginx 基本知识快速入门
     </h1>
   
 
         
-        <a href="/2017/12/09/CodeMirror/" class="archive-article-date">
-  	<time datetime="2017-12-09T07:01:44.869Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-09</time>
+        <a href="/2017/08/05/Nginx/" class="archive-article-date">
+  	<time datetime="2017-08-05T12:41:33.497Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-05</time>
 </a>
         
       </header>
@@ -204,17 +225,106 @@ var _hmt = _hmt || [];
 
     <!-- 目录内容 -->
 
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-Nginx？"><span class="toc-number">1.</span> <span class="toc-text">什么是 Nginx？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-特点"><span class="toc-number">2.</span> <span class="toc-text">Nginx 特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#主要应用场合"><span class="toc-number">3.</span> <span class="toc-text">主要应用场合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、静态-HTTP-服务器"><span class="toc-number">3.1.</span> <span class="toc-text">1、静态 HTTP 服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、反向代理服务器"><span class="toc-number">3.2.</span> <span class="toc-text">2、反向代理服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、负载均衡"><span class="toc-number">3.3.</span> <span class="toc-text">3、负载均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、虚拟主机"><span class="toc-number">3.4.</span> <span class="toc-text">4、虚拟主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5、FastCGI"><span class="toc-number">3.5.</span> <span class="toc-text">5、FastCGI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+   </script>
+      
 <!-- 目录内容结束 -->
 
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/blog/171209/bA6g59gGB5.jpg-1" alt="mark"></p>
-<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><p>写这个的目的是因为之前项目里用到过 CodeMirror，觉得作为一款在线代码编辑器还是不错，也看到过有些网站用到过在线代码编辑，当然我不知道他们是用什么做的，这里我把公司项目里用到的那部分抽出来，单独写篇博客，并把抽出来的那部分代码提交到 GitHub 去（<a href="https://github.com/zhisheng17/CoderBlog/tree/master/CodeMirror">地址</a>），以防日后可能会再次用到（没准毕业设计里可能用的到）。<br>
-        
-          <a class="article-more-a" href="/2017/12/09/CodeMirror/#more">more >></a>
-        
+        <h2 id="什么是-Nginx？"><a href="#什么是-Nginx？" class="headerlink" title="什么是 Nginx？"></a>什么是 Nginx？</h2><p>Nginx 是一个高性能的 HTTP 和反向代理服务器，以高稳定性、丰富的功能集、示例配置文件和低系统资源的消耗而闻名。</p>
+<h2 id="Nginx-特点"><a href="#Nginx-特点" class="headerlink" title="Nginx 特点"></a>Nginx 特点</h2><ul>
+<li>处理静态文件，索引文件以及自动索引；打开文件描述符缓冲．</li>
+<li>无缓存的反向代理加速，简单的负载均衡和容错．</li>
+<li>FastCGI，简单的负载均衡和容错．</li>
+<li>模块化的结构。包括 gzipping, byte ranges, chunked responses,以及 SSI-filter 等 filter。如果由 FastCGI 或其它代理服务器处理单页中存在的多个 SSI，则这项处理可以并行运行，而不需要相互等待。</li>
+<li>支持 SSL 和 TLSSNI．</li>
+</ul>
+<a id="more"></a>
+<h2 id="主要应用场合"><a href="#主要应用场合" class="headerlink" title="主要应用场合"></a>主要应用场合</h2><h3 id="1、静态-HTTP-服务器"><a href="#1、静态-HTTP-服务器" class="headerlink" title="1、静态 HTTP 服务器"></a>1、静态 HTTP 服务器</h3><p>首先，Nginx是一个 HTTP 服务器，可以将服务器上的静态文件（如 HTML、图片）通过 HTTP 协议展现给客户端。</p>
+<p>配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>; <span class="comment"># 端口号</span></div><div class="line">	<span class="attribute">location</span> / &#123;</div><div class="line">		<span class="attribute">root</span> /usr/share/nginx/html; <span class="comment"># 静态文件路径</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2、反向代理服务器"><a href="#2、反向代理服务器" class="headerlink" title="2、反向代理服务器"></a>2、反向代理服务器</h3><p>什么是反向代理？</p>
+<p>客户端本来可以直接通过 HTTP 协议访问某网站应用服务器，如果网站管理员在中间加上一个 Nginx，客户端请求Nginx，Nginx 请求应用服务器，然后将结果返回给客户端，此时 Nginx 就是反向代理服务器。</p>
+<p><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png" alt=""></p>
+<p>配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">	<span class="attribute">location</span> / &#123;</div><div class="line">		<span class="attribute">proxy_pass</span> http://192.168.20.1:8080; <span class="comment"># 应用服务器HTTP地址</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>既然服务器可以直接 HTTP 访问，为什么要在中间加上一个反向代理，不是多此一举吗？反向代理有什么作用？继续往下看，下面的负载均衡、虚拟主机，都基于反向代理实现，当然反向代理的功能也不仅仅是这些。</p>
+<h3 id="3、负载均衡"><a href="#3、负载均衡" class="headerlink" title="3、负载均衡"></a>3、负载均衡</h3><p>当网站访问量非常大，网站站长开心赚钱的同时，也摊上事儿了。因为网站越来越慢，一台服务器已经不够用了。于是将相同的应用部署在多台服务器上，将大量用户的请求分配给多台机器处理。同时带来的好处是，其中一台服务器万一挂了，只要还有其他服务器正常运行，就不会影响用户使用。</p>
+<p>当我们网站进行大的升级更新时，我们不可能直接将所有的服务器都关掉，然后再升级的。通常我们都是批量的关掉一些服务器，去升级网站，当有用户的请求时则分配给其他还在运作的机器处理。当之前关掉的机器更新完成后，再次开启，然后又批量关掉部分机器，如上循环，直到最后全部机器都更新完成。这样就不会影响用户使用。</p>
+<p>Nginx 可以通过反向代理来实现负载均衡。</p>
+<p><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221003659.jpg" alt=""></p>
+<p>配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">upstream</span> myapp &#123;</div><div class="line">	<span class="attribute">server</span> <span class="number">192.168.20.1:8080</span>; <span class="comment"># 应用服务器1</span></div><div class="line">	<span class="attribute">server</span> <span class="number">192.168.20.2:8080</span>; <span class="comment"># 应用服务器2</span></div><div class="line">&#125;</div><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">	<span class="attribute">location</span> / &#123;</div><div class="line">		<span class="attribute">proxy_pass</span> http://myapp;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4、虚拟主机"><a href="#4、虚拟主机" class="headerlink" title="4、虚拟主机"></a>4、虚拟主机</h3><p>网站访问量大，需要负载均衡。然而并不是所有网站都如此出色，有的网站，由于访问量太小，需要节省成本，将多个网站部署在同一台服务器上。</p>
+<p>例如将 www.aaa.com 和 www.bbb.com 两个网站部署在同一台服务器上，两个域名解析到同一个 IP 地址，但是用户通过两个域名却可以打开两个完全不同的网站，互相不影响，就像访问两个服务器一样，所以叫两个虚拟主机。</p>
+<p>配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span> default_server;</div><div class="line">	<span class="attribute">server_name</span> _;</div><div class="line">	<span class="attribute">return</span> <span class="number">444</span>; <span class="comment"># 过滤其他域名的请求，返回444状态码</span></div><div class="line">&#125;</div><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">	<span class="attribute">server_name</span> www.aaa.com; <span class="comment"># www.aaa.com域名</span></div><div class="line">	<span class="attribute">location</span> / &#123;</div><div class="line">		<span class="attribute">proxy_pass</span> http://localhost:8080; <span class="comment"># 对应端口号8080</span></div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">	<span class="attribute">server_name</span> www.bbb.com; <span class="comment"># www.bbb.com域名</span></div><div class="line">	<span class="attribute">location</span> / &#123;</div><div class="line">		<span class="attribute">proxy_pass</span> http://localhost:8081; <span class="comment"># 对应端口号8081</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在服务器 8080 和 8081 两个端口分别开了一个应用，客户端通过不同的域名访问，根据 server_name 可以反向代理到对应的应用服务器。</p>
+<p>虚拟主机的原理是通过 HTTP 请求头中的 Host 是否匹配 server_name 来实现的，有兴趣的同学可以研究一下 HTTP 协议。</p>
+<p>另外，server_name 配置还可以过滤有人恶意将某些域名指向你的主机服务器。</p>
+<h3 id="5、FastCGI"><a href="#5、FastCGI" class="headerlink" title="5、FastCGI"></a>5、FastCGI</h3><p>Nginx 本身不支持 PHP 等语言，但是它可以通过 FastCGI 来将请求扔给某些语言或框架处理（例如 PHP、Python、Perl）。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">	<span class="attribute">location</span> <span class="regexp">~ \.php$</span> &#123;</div><div class="line">		<span class="attribute">include</span> fastcgi_params;</div><div class="line">		<span class="attribute">fastcgi_param</span> SCRIPT_FILENAME /PHP文件路径<span class="variable">$fastcgi_script_name</span>; <span class="comment"># PHP文件路径</span></div><div class="line">		<span class="attribute">fastcgi_pass</span> <span class="number">127.0.0.1:9000</span>; <span class="comment"># PHP-FPM地址和端口号</span></div><div class="line">		<span class="comment"># 另一种方式：fastcgi_pass unix:/var/run/php5-fpm.sock;</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置中将 .php 结尾的请求通过 FashCGI 交给 PHP-FPM 处理，PHP-FPM 是 PHP 的一个 FastCGI 管理器。有关FashCGI 可以查阅其他资料，本文不再介绍。</p>
+<p>fastcgi_pass 和 proxy_pass 有什么区别？下面一张图带你看明白：</p>
+<p><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221800380.jpg" alt=""></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1、<a href="http://xxgblog.com/2015/05/17/nginx-start/" target="_blank" rel="external">Nginx基本功能极速入门</a></p>
+<p>2、<a href="https://www.gitbook.com/book/skyao/leaning-nginx/details" target="_blank" rel="external">Nginx 学习笔记</a></p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你支持我买服务器！<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/zhifubao.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/weixin.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -225,7 +335,7 @@ var _hmt = _hmt || [];
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">前端</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Nginx</a>
         		</li>
       		
 		</ul>
@@ -234,18 +344,83 @@ var _hmt = _hmt || [];
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/09/CodeMirror/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAAB0klEQVR42u3aS27DMAwFwNz/0imQVYvA7iNpyWkxWhmBLY+zIMTP4xGv52u9Xx/d8/2X93W+zwULFxd3zH2ervd7kqeO9jn/C6JncXFxN3Kr2yWBLIlC1eCIi4v7adxeGEqIuLi4/4NbDXC4uLh/kdsLOr2wtSlXw8XFHXAnBdOrrjfVd3FxccddiV4LpHfoid6Oi4u7hdsrYh41V0YpTbw/Li7uTm4ebn7ZbjzGUdgCFxd3ATcJRr0POx/aODdEhxtcXNzF3GSj/DWTAFoYycLFxb2JG6UixcBXbaj8uAcXF3cLNz+45G2VcngqpmS4uLiruZO0p1oYzY9EhRCGi4u7gJsfbuYpUxLIopCHi4u7hTtvt1SLKfmBadR0wcXFHXMnw1LVcYp8bKu8HS4u7phbbZNMCh/nHxkFPlxc3Ju4edJSfaraRIkCGS4u7gJu9RzUK3PkJZiCBxcXdxm3l+pUhyeq5dFowhQXF3cZt1cwzcNZ9VOrbR5cXNx13LwkWi1/TFqqUcaGi4u7mDsJNJf1cpOSCi4u7odx50NaebP2gkCGi4u7kZscg/KiSXmkAxcXdyO3R+mVU/PkBxcX9y5ur2BaHbbIj0QXJFG4uLh97hezvewLioOE/gAAAABJRU5ErkJggg==" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
-
+  
+<nav id="article-nav">
+  
+    <a href="/2017/08/11/most-success/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          马云热血励志演讲《最伟大的成功》
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/08/04/alibaba/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">秋招第三站 —— 内推阿里（一面）</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
 
 
@@ -253,353 +428,30 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-netty-01-env" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/08/netty-01-env/">Netty 源码阅读之初始环境搭建</a>
-    </h1>
+    <div class="duoshuo"></div>
   
 
-        
-        <a href="/2017/12/08/netty-01-env/" class="archive-article-date">
-  	<time datetime="2017-12-08T08:22:03.817Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-08</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p4.jpeg-1" alt=""></p>
-<h3 id="Netty-简介"><a href="#Netty-简介" class="headerlink" title="Netty 简介"></a>Netty 简介</h3><p>Netty 是由 JBOSS 提供的一个开源的 java 网络编程框架，主要是对 java 的 nio 包进行了再次封装。Netty 比 java 原生的nio 包提供了更加强大、稳定的功能和易于使用的 api。 netty 的作者是 Trustin Lee，这是一个韩国人，他还开发了另外一个著名的网络编程框架，mina。二者在很多方面都十分相似，它们的线程模型也是基本一致 。不过 netty 社区的活跃程度要 mina 高得多。<br>
-        
-          <a class="article-more-a" href="/2017/12/08/netty-01-env/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/08/netty-01-env/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
 
 
-
-
-
-
-
-
+  <section id="comments">
+<!--高速版，加载速度快，使用前需测试页面的兼容性-->
+<div id="SOHUCS" sid="Nginx 基本知识快速入门"  style="padding: 0px 30px 0px 46px;"></div>
+<script>
+  (function(){
+    var appid = 'cysWCg9Ij',
+    conf = '7f51baf245f3217589bb3b4ba8d8c691';
+    var doc = document,
+    s = doc.createElement('script'),
+    h = doc.getElementsByTagName('head')[0] || doc.head || doc.documentElement;
+    s.type = 'text/javascript';
+    s.charset = 'utf-8';
+    s.src =  'http://assets.changyan.sohu.com/upload/changyan.js?conf='+ conf +'&appid=' + appid;
+    h.insertBefore(s,h.firstChild);
+    window.SCS_NO_IFRAME = true;
+  })()
+</script>
+  </section>
   
-    <article id="post-RestTemplate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/03/RestTemplate/">RestTemplate 详解</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/03/RestTemplate/" class="archive-article-date">
-  	<time datetime="2017-12-03T07:00:07.852Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-03</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p3.jpeg-1" alt=""></p>
-<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这段时间自己做的项目中需要调用服务提供者的服务（接口），具体就是：我这边需要将页面所输入的 Groovy 脚本代码传给别人提供的服务接口，然后那边返回脚本编译的结果给我，我需要将编译结果展示在页面，用的就是 RestTemplate 了，那 RestTemplate 是什么呢？简单说就是：简化了发起 HTTP 请求以及处理响应的过程，并且支持 REST 。下文就稍微总结下。<br>
-        
-          <a class="article-more-a" href="/2017/12/03/RestTemplate/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spring</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/03/RestTemplate/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-wx-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/02/wx-01/">实习圈群里提问小记</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/02/wx-01/" class="archive-article-date">
-  	<time datetime="2017-12-02T15:13:25.666Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-02</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p2.jpeg-1" alt=""></p>
-        
-          <a class="article-more-a" href="/2017/12/02/wx-01/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">实习圈</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/02/wx-01/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Docker-harbor" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/26/Docker-harbor/">基于 Harbor 搭建 Docker 私有镜像仓库</a>
-    </h1>
-  
-
-        
-        <a href="/2017/11/26/Docker-harbor/" class="archive-article-date">
-  	<time datetime="2017-11-26T02:47:27.733Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-26</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/blog/171126/j9de1Jf6m0.png-1" alt="mark"></p>
-<h3 id="什么是-Harbor？"><a href="#什么是-Harbor？" class="headerlink" title="什么是 Harbor？"></a>什么是 Harbor？</h3><p>第一次使用这个的时候是刚进公司处理的第一个任务的时候，发现 Harbor 就是一个用于存储和分发 Docker 镜像的企业级Registry 服务器。<br>
-        
-          <a class="article-more-a" href="/2017/11/26/Docker-harbor/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Docker</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/26/Docker-harbor/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-flow-control" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/18/flow-control/">基于分布式环境下限流系统的设计</a>
-    </h1>
-  
-
-        
-        <a href="/2017/11/18/flow-control/" class="archive-article-date">
-  	<time datetime="2017-11-18T03:00:35.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-18</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p1.jpeg-1" alt=""><br>
-        
-          <a class="article-more-a" href="/2017/11/18/flow-control/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Redis</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">流控</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/18/flow-control/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
-  
-
 
           </div>
         </div>
@@ -629,8 +481,8 @@ var _hmt = _hmt || [];
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

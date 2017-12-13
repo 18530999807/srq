@@ -15,14 +15,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Zhisheng的博客</title>
+  <title>ElasticSearch 集群监控 | Zhisheng的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Zhisheng的博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="最近在做 ElasticSearch 的信息（集群和节点）监控，特此稍微整理下学到的东西。这篇文章主要介绍集群的监控。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch 集群监控">
+<meta property="og:url" content="http://yoursite.com/2017/10/15/ElasticSearch-cluster-health-metrics/index.html">
 <meta property="og:site_name" content="Zhisheng的博客">
+<meta property="og:description" content="最近在做 ElasticSearch 的信息（集群和节点）监控，特此稍微整理下学到的东西。这篇文章主要介绍集群的监控。">
+<meta property="og:image" content="http://ohfk1r827.bkt.clouddn.com/cb5.jpeg-1">
+<meta property="og:image" content="https://datadog-prod.imgix.net/img/blog/monitor-elasticsearch-performance-metrics/elasticsearch-dashboard-final2.png?fit=max">
+<meta property="og:updated_time" content="2017-10-15T12:34:01.227Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zhisheng的博客">
+<meta name="twitter:title" content="ElasticSearch 集群监控">
+<meta name="twitter:description" content="最近在做 ElasticSearch 的信息（集群和节点）监控，特此稍微整理下学到的东西。这篇文章主要介绍集群的监控。">
+<meta name="twitter:image" content="http://ohfk1r827.bkt.clouddn.com/cb5.jpeg-1">
   
     <link rel="alternative" href="/atom.xml" title="Zhisheng的博客" type="application/atom+xml">
   
@@ -181,22 +188,20 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-CodeMirror" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-ElasticSearch-cluster-health-metrics" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/09/CodeMirror/">使用 CodeMirror 打造属于自己的在线代码编辑器</a>
+    <h1 class="article-title" itemprop="name">
+      ElasticSearch 集群监控
     </h1>
   
 
         
-        <a href="/2017/12/09/CodeMirror/" class="archive-article-date">
-  	<time datetime="2017-12-09T07:01:44.869Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-09</time>
+        <a href="/2017/10/15/ElasticSearch-cluster-health-metrics/" class="archive-article-date">
+  	<time datetime="2017-10-15T12:35:47.137Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-15</time>
 </a>
         
       </header>
@@ -204,17 +209,132 @@ var _hmt = _hmt || [];
 
     <!-- 目录内容 -->
 
+    <p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+          <span class="btn-bg"></span>
+          <span class="btn-text">文章导航</span>
+          </p>
+    <div id="toc-article" class="toc-article">
+        <span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+        <strong class="toc-title">文章目录</strong>
+           <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#要监控哪些-ElasticSearch-metrics"><span class="toc-number">1.</span> <span class="toc-text">要监控哪些 ElasticSearch metrics</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#集群健康"><span class="toc-number">2.</span> <span class="toc-text">集群健康</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#集群统计"><span class="toc-number">3.</span> <span class="toc-text">集群统计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#内存使用和-GC-指标"><span class="toc-number">3.1.</span> <span class="toc-text">内存使用和 GC 指标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后"><span class="toc-number">4.</span> <span class="toc-text">最后</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关阅读"><span class="toc-number">6.</span> <span class="toc-text">相关阅读</span></a></li></ol>
+         </div>
+   <script type="text/javascript">
+    function showToc(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:block");
+        show_toc_btn.setAttribute("style","display:none");
+        };
+    function showBtn(){
+        var toc_article = document.getElementById("toc-article");
+        var show_toc_btn = document.getElementById("show-toc-btn");
+        toc_article.setAttribute("style","display:none");
+        show_toc_btn.setAttribute("style","display:block");
+        };
+   </script>
+      
 <!-- 目录内容结束 -->
 
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/blog/171209/bA6g59gGB5.jpg-1" alt="mark"></p>
-<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><p>写这个的目的是因为之前项目里用到过 CodeMirror，觉得作为一款在线代码编辑器还是不错，也看到过有些网站用到过在线代码编辑，当然我不知道他们是用什么做的，这里我把公司项目里用到的那部分抽出来，单独写篇博客，并把抽出来的那部分代码提交到 GitHub 去（<a href="https://github.com/zhisheng17/CoderBlog/tree/master/CodeMirror">地址</a>），以防日后可能会再次用到（没准毕业设计里可能用的到）。<br>
-        
-          <a class="article-more-a" href="/2017/12/09/CodeMirror/#more">more >></a>
-        
+        <p><img src="http://ohfk1r827.bkt.clouddn.com/cb5.jpeg-1" alt=""></p>
+<p>最近在做 ElasticSearch 的信息（集群和节点）监控，特此稍微整理下学到的东西。这篇文章主要介绍集群的监控。<br><a id="more"></a></p>
+<h3 id="要监控哪些-ElasticSearch-metrics"><a href="#要监控哪些-ElasticSearch-metrics" class="headerlink" title="要监控哪些 ElasticSearch metrics"></a>要监控哪些 ElasticSearch metrics</h3><p><img src="https://datadog-prod.imgix.net/img/blog/monitor-elasticsearch-performance-metrics/elasticsearch-dashboard-final2.png?fit=max" alt=""></p>
+<p>Elasticsearch 提供了大量的 Metric，可以帮助您检测到问题的迹象，在遇到节点不可用、out-of-memory、long garbage collection times 的时候采取相应措施。但是指标太多了，有时我们并不需要这么多，这就需要我们进行筛选。</p>
+<h3 id="集群健康"><a href="#集群健康" class="headerlink" title="集群健康"></a>集群健康</h3><p>一个 Elasticsearch 集群至少包括一个节点和一个索引。或者它 可能有一百个数据节点、三个单独的主节点，以及一小打客户端节点——这些共同操作一千个索引（以及上万个分片）。</p>
+<p>不管集群扩展到多大规模，你都会想要一个快速获取集群状态的途径。<code>Cluster Health</code> API 充当的就是这个角色。你可以把它想象成是在一万英尺的高度鸟瞰集群。它可以告诉你安心吧一切都好，或者警告你集群某个地方有问题。</p>
+<p>让我们执行一下 <code>cluster-health</code> API 然后看看响应体是什么样子的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET _cluster/health</div></pre></td></tr></table></figure>
+<p>和 Elasticsearch 里其他 API 一样，<code>cluster-health</code> 会返回一个 JSON 响应。这对自动化和告警系统来说，非常便于解析。响应中包含了和你集群有关的一些关键信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   <span class="attr">"cluster_name"</span>: <span class="string">"elasticsearch_zach"</span>,</div><div class="line">   <span class="attr">"status"</span>: <span class="string">"green"</span>,</div><div class="line">   <span class="attr">"timed_out"</span>: <span class="literal">false</span>,</div><div class="line">   <span class="attr">"number_of_nodes"</span>: <span class="number">1</span>,</div><div class="line">   <span class="attr">"number_of_data_nodes"</span>: <span class="number">1</span>,</div><div class="line">   <span class="attr">"active_primary_shards"</span>: <span class="number">10</span>,</div><div class="line">   <span class="attr">"active_shards"</span>: <span class="number">10</span>,</div><div class="line">   <span class="attr">"relocating_shards"</span>: <span class="number">0</span>,</div><div class="line">   <span class="attr">"initializing_shards"</span>: <span class="number">0</span>,</div><div class="line">   <span class="attr">"unassigned_shards"</span>: <span class="number">0</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>响应信息中最重要的一块就是 <code>status</code> 字段。状态可能是下列三个值之一 :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">status</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">green</td>
+<td style="text-align:center">所有的主分片和副本分片都已分配。你的集群是 100% 可用的。</td>
+</tr>
+<tr>
+<td style="text-align:center">yellow</td>
+<td style="text-align:center">所有的主分片已经分片了，但至少还有一个副本是缺失的。不会有数据丢失，所以搜索结果依然是完整的。不过，你的高可用性在某种程度上被弱化。如果 更多的 分片消失，你就会丢数据了。把 yellow 想象成一个需要及时调查的警告。</td>
+</tr>
+<tr>
+<td style="text-align:center">red</td>
+<td style="text-align:center">至少一个主分片（以及它的全部副本）都在缺失中。这意味着你在缺少数据：搜索只能返回部分数据，而分配到这个分片上的写入请求会返回一个异常。</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>number_of_nodes</code> 和 <code>number_of_data_nodes</code> 这个命名完全是自描述的。</li>
+<li><code>active_primary_shards</code> 指出你集群中的主分片数量。这是涵盖了所有索引的汇总值。</li>
+<li><code>active_shards</code> 是涵盖了所有索引的所有分片的汇总值，即包括副本分片。</li>
+<li><code>relocating_shards</code> 显示当前正在从一个节点迁往其他节点的分片的数量。通常来说应该是 0，不过在 Elasticsearch 发现集群不太均衡时，该值会上涨。比如说：添加了一个新节点，或者下线了一个节点。</li>
+<li><code>initializing_shards</code> 是刚刚创建的分片的个数。比如，当你刚创建第一个索引，分片都会短暂的处于 <code>initializing</code> 状态。这通常会是一个临时事件，分片不应该长期停留在 <code>initializing</code>状态。你还可能在节点刚重启的时候看到 <code>initializing</code> 分片：当分片从磁盘上加载后，它们会从<code>initializing</code> 状态开始。</li>
+<li><code>unassigned_shards</code> 是已经在集群状态中存在的分片，但是实际在集群里又找不着。通常未分配分片的来源是未分配的副本。比如，一个有 5 分片和 1 副本的索引，在单节点集群上，就会有 5 个未分配副本分片。如果你的集群是 <code>red</code> 状态，也会长期保有未分配分片（因为缺少主分片）。</li>
+</ul>
+<h3 id="集群统计"><a href="#集群统计" class="headerlink" title="集群统计"></a>集群统计</h3><p>集群统计信息包含 集群的分片数，文档数，存储空间，缓存信息，内存作用率，插件内容，文件系统内容，JVM 作用状况，系统 CPU，OS 信息，段信息。</p>
+<p>查看全部统计信息命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -XGET &apos;http://localhost:9200/_cluster/stats?human&amp;pretty&apos;</div></pre></td></tr></table></figure>
+<p>返回 JSON 结果：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   <span class="attr">"timestamp"</span>: <span class="number">1459427693515</span>,</div><div class="line">   <span class="attr">"cluster_name"</span>: <span class="string">"elasticsearch"</span>,</div><div class="line">   <span class="attr">"status"</span>: <span class="string">"green"</span>,</div><div class="line">   <span class="attr">"indices"</span>: &#123;</div><div class="line">      <span class="attr">"count"</span>: <span class="number">2</span>,</div><div class="line">      <span class="attr">"shards"</span>: &#123;</div><div class="line">         <span class="attr">"total"</span>: <span class="number">10</span>,</div><div class="line">         <span class="attr">"primaries"</span>: <span class="number">10</span>,</div><div class="line">         <span class="attr">"replication"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"index"</span>: &#123;</div><div class="line">            <span class="attr">"shards"</span>: &#123;</div><div class="line">               <span class="attr">"min"</span>: <span class="number">5</span>,</div><div class="line">               <span class="attr">"max"</span>: <span class="number">5</span>,</div><div class="line">               <span class="attr">"avg"</span>: <span class="number">5</span></div><div class="line">            &#125;,</div><div class="line">            <span class="attr">"primaries"</span>: &#123;</div><div class="line">               <span class="attr">"min"</span>: <span class="number">5</span>,</div><div class="line">               <span class="attr">"max"</span>: <span class="number">5</span>,</div><div class="line">               <span class="attr">"avg"</span>: <span class="number">5</span></div><div class="line">            &#125;,</div><div class="line">            <span class="attr">"replication"</span>: &#123;</div><div class="line">               <span class="attr">"min"</span>: <span class="number">0</span>,</div><div class="line">               <span class="attr">"max"</span>: <span class="number">0</span>,</div><div class="line">               <span class="attr">"avg"</span>: <span class="number">0</span></div><div class="line">            &#125;</div><div class="line">         &#125;</div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"docs"</span>: &#123;</div><div class="line">         <span class="attr">"count"</span>: <span class="number">10</span>,</div><div class="line">         <span class="attr">"deleted"</span>: <span class="number">0</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"store"</span>: &#123;</div><div class="line">         <span class="attr">"size"</span>: <span class="string">"16.2kb"</span>,</div><div class="line">         <span class="attr">"size_in_bytes"</span>: <span class="number">16684</span>,</div><div class="line">         <span class="attr">"throttle_time"</span>: <span class="string">"0s"</span>,</div><div class="line">         <span class="attr">"throttle_time_in_millis"</span>: <span class="number">0</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"fielddata"</span>: &#123;</div><div class="line">         <span class="attr">"memory_size"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"memory_size_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"evictions"</span>: <span class="number">0</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"query_cache"</span>: &#123;</div><div class="line">         <span class="attr">"memory_size"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"memory_size_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"total_count"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"hit_count"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"miss_count"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"cache_size"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"cache_count"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"evictions"</span>: <span class="number">0</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"completion"</span>: &#123;</div><div class="line">         <span class="attr">"size"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"size_in_bytes"</span>: <span class="number">0</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"segments"</span>: &#123;</div><div class="line">         <span class="attr">"count"</span>: <span class="number">4</span>,</div><div class="line">         <span class="attr">"memory"</span>: <span class="string">"8.6kb"</span>,</div><div class="line">         <span class="attr">"memory_in_bytes"</span>: <span class="number">8898</span>,</div><div class="line">         <span class="attr">"terms_memory"</span>: <span class="string">"6.3kb"</span>,</div><div class="line">         <span class="attr">"terms_memory_in_bytes"</span>: <span class="number">6522</span>,</div><div class="line">         <span class="attr">"stored_fields_memory"</span>: <span class="string">"1.2kb"</span>,</div><div class="line">         <span class="attr">"stored_fields_memory_in_bytes"</span>: <span class="number">1248</span>,</div><div class="line">         <span class="attr">"term_vectors_memory"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"term_vectors_memory_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"norms_memory"</span>: <span class="string">"384b"</span>,</div><div class="line">         <span class="attr">"norms_memory_in_bytes"</span>: <span class="number">384</span>,</div><div class="line">         <span class="attr">"doc_values_memory"</span>: <span class="string">"744b"</span>,</div><div class="line">         <span class="attr">"doc_values_memory_in_bytes"</span>: <span class="number">744</span>,</div><div class="line">         <span class="attr">"index_writer_memory"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"index_writer_memory_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"version_map_memory"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"version_map_memory_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"fixed_bit_set"</span>: <span class="string">"0b"</span>,</div><div class="line">         <span class="attr">"fixed_bit_set_memory_in_bytes"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"file_sizes"</span>: &#123;&#125;</div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"percolator"</span>: &#123;</div><div class="line">         <span class="attr">"num_queries"</span>: <span class="number">0</span></div><div class="line">      &#125;</div><div class="line">   &#125;,</div><div class="line">   <span class="attr">"nodes"</span>: &#123;</div><div class="line">      <span class="attr">"count"</span>: &#123;</div><div class="line">         <span class="attr">"total"</span>: <span class="number">1</span>,</div><div class="line">         <span class="attr">"data"</span>: <span class="number">1</span>,</div><div class="line">         <span class="attr">"coordinating_only"</span>: <span class="number">0</span>,</div><div class="line">         <span class="attr">"master"</span>: <span class="number">1</span>,</div><div class="line">         <span class="attr">"ingest"</span>: <span class="number">1</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"versions"</span>: [</div><div class="line">         <span class="string">"5.6.3"</span></div><div class="line">      ],</div><div class="line">      <span class="attr">"os"</span>: &#123;</div><div class="line">         <span class="attr">"available_processors"</span>: <span class="number">8</span>,</div><div class="line">         <span class="attr">"allocated_processors"</span>: <span class="number">8</span>,</div><div class="line">         <span class="attr">"names"</span>: [</div><div class="line">            &#123;</div><div class="line">               <span class="attr">"name"</span>: <span class="string">"Mac OS X"</span>,</div><div class="line">               <span class="attr">"count"</span>: <span class="number">1</span></div><div class="line">            &#125;</div><div class="line">         ],</div><div class="line">         <span class="attr">"mem"</span> : &#123;</div><div class="line">            <span class="attr">"total"</span> : <span class="string">"16gb"</span>,</div><div class="line">            <span class="attr">"total_in_bytes"</span> : <span class="number">17179869184</span>,</div><div class="line">            <span class="attr">"free"</span> : <span class="string">"78.1mb"</span>,</div><div class="line">            <span class="attr">"free_in_bytes"</span> : <span class="number">81960960</span>,</div><div class="line">            <span class="attr">"used"</span> : <span class="string">"15.9gb"</span>,</div><div class="line">            <span class="attr">"used_in_bytes"</span> : <span class="number">17097908224</span>,</div><div class="line">            <span class="attr">"free_percent"</span> : <span class="number">0</span>,</div><div class="line">            <span class="attr">"used_percent"</span> : <span class="number">100</span></div><div class="line">         &#125;</div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"process"</span>: &#123;</div><div class="line">         <span class="attr">"cpu"</span>: &#123;</div><div class="line">            <span class="attr">"percent"</span>: <span class="number">9</span></div><div class="line">         &#125;,</div><div class="line">         <span class="attr">"open_file_descriptors"</span>: &#123;</div><div class="line">            <span class="attr">"min"</span>: <span class="number">268</span>,</div><div class="line">            <span class="attr">"max"</span>: <span class="number">268</span>,</div><div class="line">            <span class="attr">"avg"</span>: <span class="number">268</span></div><div class="line">         &#125;</div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"jvm"</span>: &#123;</div><div class="line">         <span class="attr">"max_uptime"</span>: <span class="string">"13.7s"</span>,</div><div class="line">         <span class="attr">"max_uptime_in_millis"</span>: <span class="number">13737</span>,</div><div class="line">         <span class="attr">"versions"</span>: [</div><div class="line">            &#123;</div><div class="line">               <span class="attr">"version"</span>: <span class="string">"1.8.0_74"</span>,</div><div class="line">               <span class="attr">"vm_name"</span>: <span class="string">"Java HotSpot(TM) 64-Bit Server VM"</span>,</div><div class="line">               <span class="attr">"vm_version"</span>: <span class="string">"25.74-b02"</span>,</div><div class="line">               <span class="attr">"vm_vendor"</span>: <span class="string">"Oracle Corporation"</span>,</div><div class="line">               <span class="attr">"count"</span>: <span class="number">1</span></div><div class="line">            &#125;</div><div class="line">         ],</div><div class="line">         <span class="attr">"mem"</span>: &#123;</div><div class="line">            <span class="attr">"heap_used"</span>: <span class="string">"57.5mb"</span>,</div><div class="line">            <span class="attr">"heap_used_in_bytes"</span>: <span class="number">60312664</span>,</div><div class="line">            <span class="attr">"heap_max"</span>: <span class="string">"989.8mb"</span>,</div><div class="line">            <span class="attr">"heap_max_in_bytes"</span>: <span class="number">1037959168</span></div><div class="line">         &#125;,</div><div class="line">         <span class="attr">"threads"</span>: <span class="number">90</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"fs"</span>: &#123;</div><div class="line">         <span class="attr">"total"</span>: <span class="string">"200.6gb"</span>,</div><div class="line">         <span class="attr">"total_in_bytes"</span>: <span class="number">215429193728</span>,</div><div class="line">         <span class="attr">"free"</span>: <span class="string">"32.6gb"</span>,</div><div class="line">         <span class="attr">"free_in_bytes"</span>: <span class="number">35064553472</span>,</div><div class="line">         <span class="attr">"available"</span>: <span class="string">"32.4gb"</span>,</div><div class="line">         <span class="attr">"available_in_bytes"</span>: <span class="number">34802409472</span></div><div class="line">      &#125;,</div><div class="line">      <span class="attr">"plugins"</span>: [</div><div class="line">        &#123;</div><div class="line">          <span class="attr">"name"</span>: <span class="string">"analysis-icu"</span>,</div><div class="line">          <span class="attr">"version"</span>: <span class="string">"5.6.3"</span>,</div><div class="line">          <span class="attr">"description"</span>: <span class="string">"The ICU Analysis plugin integrates Lucene ICU module into elasticsearch, adding ICU relates analysis components."</span>,</div><div class="line">          <span class="attr">"classname"</span>: <span class="string">"org.elasticsearch.plugin.analysis.icu.AnalysisICUPlugin"</span>,</div><div class="line">          <span class="attr">"has_native_controller"</span>: <span class="literal">false</span></div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          <span class="attr">"name"</span>: <span class="string">"ingest-geoip"</span>,</div><div class="line">          <span class="attr">"version"</span>: <span class="string">"5.6.3"</span>,</div><div class="line">          <span class="attr">"description"</span>: <span class="string">"Ingest processor that uses looksup geo data based on ip adresses using the Maxmind geo database"</span>,</div><div class="line">          <span class="attr">"classname"</span>: <span class="string">"org.elasticsearch.ingest.geoip.IngestGeoIpPlugin"</span>,</div><div class="line">          <span class="attr">"has_native_controller"</span>: <span class="literal">false</span></div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          <span class="attr">"name"</span>: <span class="string">"ingest-user-agent"</span>,</div><div class="line">          <span class="attr">"version"</span>: <span class="string">"5.6.3"</span>,</div><div class="line">          <span class="attr">"description"</span>: <span class="string">"Ingest processor that extracts information from a user agent"</span>,</div><div class="line">          <span class="attr">"classname"</span>: <span class="string">"org.elasticsearch.ingest.useragent.IngestUserAgentPlugin"</span>,</div><div class="line">          <span class="attr">"has_native_controller"</span>: <span class="literal">false</span></div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="内存使用和-GC-指标"><a href="#内存使用和-GC-指标" class="headerlink" title="内存使用和 GC 指标"></a>内存使用和 GC 指标</h4><p>在运行 Elasticsearch 时，内存是您要密切监控的关键资源之一。 Elasticsearch 和 Lucene 以两种方式利用节点上的所有可用 RAM：JVM heap 和文件系统缓存。 Elasticsearch 运行在Java虚拟机（JVM）中，这意味着JVM垃圾回收的持续时间和频率将成为其他重要的监控领域。</p>
+<p>上面返回的 JSON监控的指标有我个人觉得有这些：</p>
+<ul>
+<li>nodes.successful</li>
+<li>nodes.failed</li>
+<li>nodes.total</li>
+<li>nodes.mem.used_percent</li>
+<li>nodes.process.cpu.percent</li>
+<li>nodes.jvm.mem.heap_used</li>
+</ul>
+<p>可以看到 JSON 文件是很复杂的，如果从这复杂的 JSON 中获取到对应的指标（key）的值呢，这里请看文章 ：<a href="http://www.54tianzhisheng.cn/2017/10/13/JsonPath/" target="_blank" rel="external">JsonPath —— JSON 解析神器</a></p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>这里主要讲下 ES 集群的一些监控信息，有些监控指标是个人觉得需要监控的，但是具体情况还是得看需求了。下篇文章主要讲节点的监控信息。转载请注明地址：<a href="http://www.54tianzhisheng.cn/2017/10/15/ElasticSearch-cluster-health-metrics/" target="_blank" rel="external">http://www.54tianzhisheng.cn/2017/10/15/ElasticSearch-cluster-health-metrics/</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>1、<a href="https://www.datadoghq.com/blog/monitor-elasticsearch-performance-metrics/" target="_blank" rel="external">How to monitor Elasticsearch performance</a></p>
+<p>2、<a href="http://www.oneapm.com/ci/elasticsearch.html" target="_blank" rel="external">ElasticSearch 性能监控</a></p>
+<p>3、<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html" target="_blank" rel="external">cluster-health</a></p>
+<p>4、<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html" target="_blank" rel="external">cluster-stats</a></p>
+<h3 id="相关阅读"><a href="#相关阅读" class="headerlink" title="相关阅读"></a>相关阅读</h3><p>1、<a href="http://www.54tianzhisheng.cn/2017/09/07/Elasticsearch-analyzers/" target="_blank" rel="external">Elasticsearch 默认分词器和中分分词器之间的比较及使用方法</a></p>
+<p>2、<a href="http://www.54tianzhisheng.cn/2017/09/09/Elasticsearch-install/" target="_blank" rel="external">全文搜索引擎 Elasticsearch 集群搭建入门教程</a></p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你支持我买服务器！<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/zhifubao.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/weixin.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -225,7 +345,7 @@ var _hmt = _hmt || [];
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">前端</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ElasticSearch</a>
         		</li>
       		
 		</ul>
@@ -234,18 +354,83 @@ var _hmt = _hmt || [];
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/09/CodeMirror/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACw0lEQVR42u3ay24iMRAFUP7/pzPSbCajhO5bDwOL0ysUwPZxJFdR5ccjfr7+Pt9ff//Lz89cj/BszOu5rscfPXh4eHitpT97rqfPx0yoyZOvGQ8PD+80LwkGzwJDsh3VzcpHuLHg4eHhvZWXHM1JqMgT7smm4OHh4X0CL5kmDxv5ct8Q9/Dw8PACXv7jPwkeeQjJSwzHay14eHh4Ma/XAHvv6+P9PTw8PLxWV33eEksS5er1gsI68fDw8A7wkgJr9fpUNTmepN1RwMDDw8Nb5fWmzL+VFyyqJY8o6cfDw8M7wKuGijwV7r1bbYMl7+Lh4eHt8ibNp97WVK8FTFaCh4eH9xpe75rU1uJ6n3+6rXh4eHgHeHmzqtqXzxfdS8HLvxvw8PDwVnm9436ylDm7UBbBw8PDW+X1SqhJJThPrNcuV+Hh4eG9hJcUBarpdW/kamOs+T/Ew8PDW+VdF0+rxdnJt3pl4ptaNR4eHt4qr3dwJ6nw1uWqalGjfJsMDw8Pr8ir/uCfwKpp8UKyjoeHh7fKqya1eburd0GqirmZHQ8PD+8Yr1pQyEuu1eN+UtL9ZYPw8PDwjvHOFWfzkfPwUAhdeHh4eAd410fwdTCYlCfyBLoXlm4aYHh4eHiHeXmSvXBwt+YqJOh4eHh4S7zqNaakVZY3z/KLC81gg4eHh3eAlx/r1VJsb2vycR75g4eHh7fKq5Zfe0WE6iWt+VUwPDw8vNfwJsWCaghZiGZJqRcPDw9vlfdVfHrJ96SyWv37f+Pj4eHhHeD1Dt9qUXWrINu7qoWHh4d3gpcHg/yyVPUSwGRDb0oVeHh4eMd4+Y/8ajqbN7cmsesmMODh4eF9AC+/EJCEh2pRIw9OeHh4eO/l5YnsvOQ6nwsPDw/vNK/a9MqP78ksa80tPDw8vFXevAHWa18lY+YttIP9PTw8PLx/n/8Dm7Zf9EYHNHIAAAAASUVORK5CYII=" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
-
+  
+<nav id="article-nav">
+  
+    <a href="/2017/10/18/ElasticSearch-nodes-metrics/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          ElasticSearch 单个节点监控
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/10/14/Nexus3-Maven/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Centos7 搭建最新 Nexus3 Maven 私服</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
 
 
@@ -253,353 +438,30 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-netty-01-env" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/08/netty-01-env/">Netty 源码阅读之初始环境搭建</a>
-    </h1>
+    <div class="duoshuo"></div>
   
 
-        
-        <a href="/2017/12/08/netty-01-env/" class="archive-article-date">
-  	<time datetime="2017-12-08T08:22:03.817Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-08</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p4.jpeg-1" alt=""></p>
-<h3 id="Netty-简介"><a href="#Netty-简介" class="headerlink" title="Netty 简介"></a>Netty 简介</h3><p>Netty 是由 JBOSS 提供的一个开源的 java 网络编程框架，主要是对 java 的 nio 包进行了再次封装。Netty 比 java 原生的nio 包提供了更加强大、稳定的功能和易于使用的 api。 netty 的作者是 Trustin Lee，这是一个韩国人，他还开发了另外一个著名的网络编程框架，mina。二者在很多方面都十分相似，它们的线程模型也是基本一致 。不过 netty 社区的活跃程度要 mina 高得多。<br>
-        
-          <a class="article-more-a" href="/2017/12/08/netty-01-env/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/08/netty-01-env/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
 
 
-
-
-
-
-
-
+  <section id="comments">
+<!--高速版，加载速度快，使用前需测试页面的兼容性-->
+<div id="SOHUCS" sid="ElasticSearch 集群监控"  style="padding: 0px 30px 0px 46px;"></div>
+<script>
+  (function(){
+    var appid = 'cysWCg9Ij',
+    conf = '7f51baf245f3217589bb3b4ba8d8c691';
+    var doc = document,
+    s = doc.createElement('script'),
+    h = doc.getElementsByTagName('head')[0] || doc.head || doc.documentElement;
+    s.type = 'text/javascript';
+    s.charset = 'utf-8';
+    s.src =  'http://assets.changyan.sohu.com/upload/changyan.js?conf='+ conf +'&appid=' + appid;
+    h.insertBefore(s,h.firstChild);
+    window.SCS_NO_IFRAME = true;
+  })()
+</script>
+  </section>
   
-    <article id="post-RestTemplate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/03/RestTemplate/">RestTemplate 详解</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/03/RestTemplate/" class="archive-article-date">
-  	<time datetime="2017-12-03T07:00:07.852Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-03</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p3.jpeg-1" alt=""></p>
-<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这段时间自己做的项目中需要调用服务提供者的服务（接口），具体就是：我这边需要将页面所输入的 Groovy 脚本代码传给别人提供的服务接口，然后那边返回脚本编译的结果给我，我需要将编译结果展示在页面，用的就是 RestTemplate 了，那 RestTemplate 是什么呢？简单说就是：简化了发起 HTTP 请求以及处理响应的过程，并且支持 REST 。下文就稍微总结下。<br>
-        
-          <a class="article-more-a" href="/2017/12/03/RestTemplate/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spring</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/03/RestTemplate/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-wx-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/02/wx-01/">实习圈群里提问小记</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/02/wx-01/" class="archive-article-date">
-  	<time datetime="2017-12-02T15:13:25.666Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-02</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p2.jpeg-1" alt=""></p>
-        
-          <a class="article-more-a" href="/2017/12/02/wx-01/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">实习圈</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/02/wx-01/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Docker-harbor" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/26/Docker-harbor/">基于 Harbor 搭建 Docker 私有镜像仓库</a>
-    </h1>
-  
-
-        
-        <a href="/2017/11/26/Docker-harbor/" class="archive-article-date">
-  	<time datetime="2017-11-26T02:47:27.733Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-26</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/blog/171126/j9de1Jf6m0.png-1" alt="mark"></p>
-<h3 id="什么是-Harbor？"><a href="#什么是-Harbor？" class="headerlink" title="什么是 Harbor？"></a>什么是 Harbor？</h3><p>第一次使用这个的时候是刚进公司处理的第一个任务的时候，发现 Harbor 就是一个用于存储和分发 Docker 镜像的企业级Registry 服务器。<br>
-        
-          <a class="article-more-a" href="/2017/11/26/Docker-harbor/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Docker</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/26/Docker-harbor/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-flow-control" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/18/flow-control/">基于分布式环境下限流系统的设计</a>
-    </h1>
-  
-
-        
-        <a href="/2017/11/18/flow-control/" class="archive-article-date">
-  	<time datetime="2017-11-18T03:00:35.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-18</time>
-</a>
-        
-      </header>
-    
-
-    <!-- 目录内容 -->
-
-<!-- 目录内容结束 -->
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://ohfk1r827.bkt.clouddn.com/p1.jpeg-1" alt=""><br>
-        
-          <a class="article-more-a" href="/2017/11/18/flow-control/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Redis</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">流控</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/18/flow-control/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
-  
-
 
           </div>
         </div>
@@ -629,8 +491,8 @@ var _hmt = _hmt || [];
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
